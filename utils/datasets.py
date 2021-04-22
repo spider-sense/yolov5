@@ -454,6 +454,25 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                 pbar.desc = f'{prefix}Caching images ({gb / 1E9:.1f}GB)'
             pbar.close()
 
+        if self.augment:
+            self.blur_seq = iaa.Sequential([
+                iaa.Sometimes(
+                    hyp['motion_blur'],
+                    iaa.MotionBlur(k=(5, 15), angle=(0, 360), direction=1.0)
+                ),
+            ])
+
+            self.noise_seq = iaa.Sequential([
+                iaa.Sometimes(
+                    hyp['noise_prob'],
+                    iaa.Sequential([
+                        iaa.AdditiveGaussianNoise(scale=(0.0, hyp['noise_gaussian'] * 255), per_channel=True),
+                        iaa.AdditivePoissonNoise(lam=(0, hyp['noise_poisson']), per_channel=True),
+                        iaa.SaltAndPepper(p=hyp['noise_sp'])
+                    ])
+                )
+            ])
+
     def cache_labels(self, path=Path('./labels.cache'), prefix=''):
         # Cache dataset labels, check images and read shapes
         x = {}  # dict
@@ -561,29 +580,8 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             # Augment colorspace
             augment_hsv(img, hgain=hyp['hsv_h'], sgain=hyp['hsv_s'], vgain=hyp['hsv_v'])
 
-            # TODO: make this a function
-            blur_seq = iaa.Sequential([
-
-                iaa.Sometimes(
-                    hyp['motion_blur'],
-                    iaa.MotionBlur(k=(5, 15), angle=(0, 360), direction=1.0)
-                ),
-
-            ])
-
-            noise_seq = iaa.Sequential([
-                iaa.Sometimes(
-                    hyp['noise_prob'],
-                    iaa.Sequential([
-                        iaa.AdditiveGaussianNoise(scale=(0.0, hyp['noise_gaussian'] * 255), per_channel=True),
-                        iaa.AdditivePoissonNoise(lam=(0, hyp['noise_poisson']), per_channel=True),
-                        iaa.SaltAndPepper(p=hyp['noise_sp'])
-                    ])
-                )
-            ])
-
-            img = blur_seq.augment_image(img)
-            img = noise_seq.augment_image(img)
+            img = self.blur_seq.augment_image(img)
+            img = self.noise_seq.augment_image(img)
 
             # Apply cutouts
             # if random.random() < 0.9:

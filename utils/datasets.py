@@ -566,15 +566,18 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
 
                 iaa.Sometimes(
                     hyp['motion_blur'],
-                    iaa.MotionBlur(k=(3, 7), angle=(0, 360), direction=(-1.0, 1.0))
+                    iaa.MotionBlur(k=(5, 15), angle=(0, 360), direction=1.0)
                 ),
 
-                # Add gaussian noise.
-                iaa.AdditiveGaussianNoise(scale=(0.0, hyp['noise_gaussian'] * 255), per_channel=True),
+                iaa.Sometimes(
+                    hyp['noise_prob'],
+                    # Add gaussian noise.
+                    iaa.AdditiveGaussianNoise(scale=(0.0, hyp['noise_gaussian'] * 255), per_channel=True),
 
-                iaa.AdditivePoissonNoise(lam=(0, hyp['noise_poisson']), per_channel=True),
+                    iaa.AdditivePoissonNoise(lam=(0, hyp['noise_poisson']), per_channel=True),
 
-                iaa.SaltAndPepper(p=hyp['noise_sp'])
+                    iaa.SaltAndPepper(p=hyp['noise_sp'])
+                )
             ])
 
             img = seq.augment_image(img)

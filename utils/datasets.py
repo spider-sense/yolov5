@@ -574,12 +574,11 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             noise_seq = iaa.Sequential([
                 iaa.Sometimes(
                     hyp['noise_prob'],
-                    # Add gaussian noise.
-                    iaa.AdditiveGaussianNoise(scale=(0.0, hyp['noise_gaussian'] * 255), per_channel=True),
-
-                    iaa.AdditivePoissonNoise(lam=(0, hyp['noise_poisson']), per_channel=True),
-
-                    iaa.SaltAndPepper(p=hyp['noise_sp'])
+                    iaa.Sequential([
+                        iaa.AdditiveGaussianNoise(scale=(0.0, hyp['noise_gaussian'] * 255), per_channel=True),
+                        iaa.AdditivePoissonNoise(lam=(0, hyp['noise_poisson']), per_channel=True),
+                        iaa.SaltAndPepper(p=hyp['noise_sp'])
+                    ])
                 )
             ])
 

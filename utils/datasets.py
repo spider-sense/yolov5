@@ -574,11 +574,10 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
 
                 iaa.AdditivePoissonNoise(lam=(0, hyp['noise_poisson']), per_channel=True),
 
-                iaa.SaltAndPepper(p=hyp['noise_sp']),
+                iaa.SaltAndPepper(p=hyp['noise_sp'])
             ])
 
-            imgs_aug = seq([].append(img))
-            img = imgs_aug[0]
+            img = seq.augment_image(img)
 
             # Apply cutouts
             # if random.random() < 0.9:

@@ -20,6 +20,9 @@ from PIL import Image, ExifTags
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
+import imgaug as ia
+import imgaug.augmenters as iaa
+
 from utils.general import check_requirements, xyxy2xywh, xywh2xyxy, xywhn2xyxy, xyn2xy, segment2box, segments2boxes, \
     resample_segments, clean_str
 from utils.torch_utils import torch_distributed_zero_first
@@ -557,6 +560,25 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
 
             # Augment colorspace
             augment_hsv(img, hgain=hyp['hsv_h'], sgain=hyp['hsv_s'], vgain=hyp['hsv_v'])
+
+            # TODO: make this a function
+            seq = iaa.Sequential([
+
+                iaa.Sometimes(
+                    hyp['motion_blur'],
+                    iaa.MotionBlur(k=(3, 7), angle=(0, 360), direction=(-1.0, 1.0))
+                ),
+
+                # Add gaussian noise.
+                iaa.AdditiveGaussianNoise(scale=(0.0, hyp['noise_gaussian'] * 255), per_channel=True),
+
+                iaa.AdditivePoissonNoise(lam=(0, hyp['noise_poisson']), per_channel=True),
+
+                iaa.SaltAndPepper(p=hyp['noise_sp']),
+            ])
+
+            imgs_aug = seq([].append(img))
+            img = imgs_aug[0]
 
             # Apply cutouts
             # if random.random() < 0.9:

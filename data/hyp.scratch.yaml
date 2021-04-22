@@ -31,3 +31,7 @@ flipud: 0.0  # image flip up-down (probability)
 fliplr: 0.5  # image flip left-right (probability)
 mosaic: 1.0  # image mosaic (probability)
 mixup: 0.0  # image mixup (probability)
+motion_blur: 0.5 # image motion blur (probability)
+noise_gaussian: 0.05 # image gaussian noise (gaussian upper limit), range 0.0-0.2
+noise_poisson: 10.0 # image poisson noise (poisson upper limit), range 0.0-40.0
+noise_sp: 0.05 # image salt and pepper noise (fraction of pixels)

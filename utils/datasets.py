@@ -562,13 +562,16 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             augment_hsv(img, hgain=hyp['hsv_h'], sgain=hyp['hsv_s'], vgain=hyp['hsv_v'])
 
             # TODO: make this a function
-            seq = iaa.Sequential([
+            blur_seq = iaa.Sequential([
 
                 iaa.Sometimes(
                     hyp['motion_blur'],
                     iaa.MotionBlur(k=(5, 15), angle=(0, 360), direction=1.0)
                 ),
 
+            ])
+
+            noise_seq = iaa.Sequential([
                 iaa.Sometimes(
                     hyp['noise_prob'],
                     # Add gaussian noise.
@@ -580,7 +583,8 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                 )
             ])
 
-            img = seq.augment_image(img)
+            img = blur_seq.augment_image(img)
+            img = noise_seq.augment_image(img)
 
             # Apply cutouts
             # if random.random() < 0.9:

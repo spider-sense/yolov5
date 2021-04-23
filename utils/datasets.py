@@ -580,7 +580,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             # Augment colorspace
             augment_hsv(img, hgain=hyp['hsv_h'], sgain=hyp['hsv_s'], vgain=hyp['hsv_v'])
 
-            img = self.blur_seq.augment_image(img)
+            # img = self.blur_seq.augment_image(img)
             img = self.noise_seq.augment_image(img)
 
             # Apply cutouts

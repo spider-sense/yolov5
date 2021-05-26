@@ -108,6 +108,7 @@ def detect(opt):
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if opt.save_crop:
+                        c = int(cls)
                         save_one_box(xyxy, im0, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
                     if save_img or opt.save_crop or view_img:  # Add bbox to image

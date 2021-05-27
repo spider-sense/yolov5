@@ -182,7 +182,7 @@ if __name__ == '__main__':
     parser.add_argument('--hide-labels', default=False, action='store_true', help='hide labels')
     parser.add_argument('--hide-conf', default=False, action='store_true', help='hide confidences')
     parser.add_argument('--frame-skip', type=int, help='run detect on every n frames')
-    parser.add_argument('--save-clean-img', type='store_true', help='save clean image')
+    parser.add_argument('--save-clean-img', action='store_true', help='save clean image')
 
     opt = parser.parse_args()
     print(opt)

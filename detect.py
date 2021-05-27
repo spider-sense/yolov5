@@ -123,12 +123,13 @@ def detect(opt):
                         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
 
                 if opt.save_clean_img and not save_img:
-                    clean_img = str(save_dir / p.name) + f'_{frame}' + ".jpg"
+                    clean_img = str(save_dir / 'clean' / p.name) + f'_{frame}' + '.jpg'
                     cv2.imwrite(clean_img, imc)
 
 
             # Print time (inference + NMS)
-            print(f'{s}Done. ({t2 - t1:.3f}s)')
+            if not opt.quiet:
+                print(f'{s}Done. ({t2 - t1:.3f}s)')
 
             # Stream results
             if view_img:
@@ -187,6 +188,7 @@ if __name__ == '__main__':
     parser.add_argument('--hide-conf', default=False, action='store_true', help='hide confidences')
     parser.add_argument('--frame-skip', type=int, help='run detect on every n frames')
     parser.add_argument('--save-clean-img', action='store_true', help='save clean image')
+    parser.add_argument('--quiet', action='store_true', help='disable print during inference')
 
     opt = parser.parse_args()
     print(opt)

@@ -96,12 +96,20 @@ def detect(opt):
 
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # img.jpg
-            txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}') # img.txt
+            txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
+            if not opt.quiet:
+                s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if opt.save_crop or opt.save_clean_img else im0  # for opt.save_crop
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
+
+                # Print results
+                if not opt.quiet:
+                    for c in det[:, -1].unique():
+                        n = (det[:, -1] == c).sum()  # detections per class
+                        s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
@@ -123,6 +131,11 @@ def detect(opt):
                 if opt.save_clean_img and not save_img:
                     clean_img = str(save_dir) + '/clean/' + str(p.name) + f'_{frame}' + '.jpg'
                     cv2.imwrite(clean_img, imc)
+
+
+            # Print time (inference + NMS)
+            if not opt.quiet:
+                print(f'{s}Done. ({t2 - t1:.3f}s)')
 
             # Stream results
             if view_img:

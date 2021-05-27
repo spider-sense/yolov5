@@ -147,7 +147,7 @@ def detect(opt):
                             save_path += '.mp4'
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer.write(im0)
-            elif opt.save_clean_image:
+            elif opt.save_clean_img:
                 cv2.imwrite(save_path, imc)
 
     if save_txt or save_img:

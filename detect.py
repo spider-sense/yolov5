@@ -13,6 +13,7 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
+import os
 
 @torch.no_grad()
 def detect(opt):
@@ -24,6 +25,9 @@ def detect(opt):
     # Directories
     save_dir = increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok)  # increment run
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+
+    if opt.save_clean_img:
+        os.mkdir(save_dir/Path('clean'))
 
     # Initialize
     set_logging()

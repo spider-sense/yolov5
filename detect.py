@@ -59,9 +59,11 @@ def detect(opt):
     t0 = time.time()
     skip = 0
     for path, img, im0s, vid_cap in dataset:
-        if skip % opt.frame_skip != 0:
-            skip += 1
+        skip += 1
+        if (skip % opt.frame_skip) != 0:
             continue
+        else:           # unnecessary to have this in else just here for clarity
+            skip = 0
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -120,6 +122,10 @@ def detect(opt):
                         label = None if opt.hide_labels else (names[c] if opt.hide_conf else f'{names[c]} {conf:.2f}')
                         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
 
+                if opt.save_clean_img and not save_img:
+                    clean_img = str(save_dir / p.name) + f'_{frame}' + ".jpg"
+                    cv2.imwrite(clean_img, imc)
+
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
@@ -147,8 +153,6 @@ def detect(opt):
                             save_path += '.mp4'
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer.write(im0)
-            elif opt.save_clean_img:
-                cv2.imwrite(save_path, imc)
 
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''

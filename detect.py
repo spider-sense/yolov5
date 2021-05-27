@@ -123,7 +123,7 @@ def detect(opt):
                         plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_thickness=opt.line_thickness)
 
                 if opt.save_clean_img and not save_img:
-                    clean_img = str(save_dir / 'clean' / p.name) + f'_{frame}' + '.jpg'
+                    clean_img = str(save_dir) + '/clean/' + str(p.name) + f'_{frame}' + '.jpg'
                     cv2.imwrite(clean_img, imc)
 
 
